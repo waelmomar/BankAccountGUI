@@ -1,14 +1,19 @@
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JCheckBox;
 import java.awt.Font;
+import java.util.stream.Collectors;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 
 public class TransactionDialog extends JDialog {
@@ -16,18 +21,9 @@ public class TransactionDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldTransactions;
+	public static BankAccount currentAccount;
 
-	public static void main(String[] args) {
-		try {
-			TransactionDialog dialog = new TransactionDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public TransactionDialog() {
+	public TransactionDialog(BankAccount currentAccount) {
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -94,7 +90,19 @@ public class TransactionDialog extends JDialog {
 		textFieldTransactions.setEditable(false);
 		textFieldTransactions.setFont(new Font("Times New Roman", Font.PLAIN, 12));
 		textFieldTransactions.setBounds(6, 111, 418, 139);
+
 		contentPanel.add(textFieldTransactions);
 		textFieldTransactions.setColumns(10);
+
+		String listString = currentAccount.getTransactions(null, null).stream().map(Object::toString)
+				.collect(Collectors.joining(", "));	
+		String dates = listString.replace("-", ".");
+		dates = dates.replace("T", " ");
+		String lines[] = dates.split("class  ransaction: ");
+		for(String w:lines){  
+			System.out.println(w);
+			textFieldTransactions.setText(w);
+		}  
+
 	}
 }
