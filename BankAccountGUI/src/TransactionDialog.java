@@ -35,7 +35,6 @@ public class TransactionDialog extends JDialog {
 
 		JCheckBox chckbxStartDate = new JCheckBox("Start Date:");
 		chckbxStartDate.addMouseListener(new MouseAdapter() {
-			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				chckbxStartDate_mouseClicked(arg0);
 			}
@@ -135,6 +134,7 @@ public class TransactionDialog extends JDialog {
 		textFieldTransactions.setText(sb.toString());
 	}
 	protected void chckbxStartDate_mouseClicked(MouseEvent arg0) {
+		comboBoxStartMonth.setEnabled(true);
 	}
 }
 
