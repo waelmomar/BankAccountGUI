@@ -5,7 +5,7 @@ public class BankAccount {
 
 	private static int nextAccountID = 1000000;
 	private double balance = 0;
-	private double withdrawalFee = 0;
+	private double withdrawalFee;
 	public int accountID;
 	
 	ArrayList<Transaction> transactionArray = new ArrayList<Transaction>();

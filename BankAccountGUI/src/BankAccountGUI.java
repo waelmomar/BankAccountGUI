@@ -1,5 +1,4 @@
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -26,7 +25,7 @@ public class BankAccountGUI extends JFrame {
 	private JButton btnDeposit;
 	private JButton btnTransactions;
 	public static BankAccount currentAccount;
-	public static boolean transactionType;
+	public static boolean deposit;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -45,7 +44,7 @@ public class BankAccountGUI extends JFrame {
 		setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		setTitle("Bank Account");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 438, 294);
+		setBounds(100, 100, 520, 310);
 		contentPane = new JPanel();
 		contentPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		contentPane.setForeground(Color.WHITE);
@@ -53,71 +52,73 @@ public class BankAccountGUI extends JFrame {
 		contentPane.setLayout(null);
 
 		JLabel lblAccount = new JLabel("Account");
-		lblAccount.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		lblAccount.setBounds(10, 22, 75, 35);
+		lblAccount.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		lblAccount.setBounds(90, 22, 75, 35);
 		contentPane.add(lblAccount);
 
 		JLabel lblCurrentBalance = new JLabel("Current Balance:  ");
-		lblCurrentBalance.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		lblCurrentBalance.setBounds(10, 123, 118, 20);
+		lblCurrentBalance.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		lblCurrentBalance.setBounds(27, 122, 138, 20);
 		contentPane.add(lblCurrentBalance);
 
 		textFieldBalance = new JTextField();
-		textFieldBalance.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		textFieldBalance.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 		textFieldBalance.setEditable(false);
-		textFieldBalance.setBounds(115, 116, 178, 35);
+		textFieldBalance.setBounds(175, 116, 178, 35);
 		contentPane.add(textFieldBalance);
 		textFieldBalance.setColumns(10);
 
 
 		btnWithdraw = new JButton("Withdraw");
 		btnWithdraw.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				DepositAndWithdraw withdraw = new DepositAndWithdraw(currentAccount, false);
-				withdraw.setVisible(true);
+				btnWithdraw_mouseClicked(arg0);
 			}
 		});
-		btnWithdraw.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		btnWithdraw.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 		btnWithdraw.setBounds(10, 198, 118, 46);
 		contentPane.add(btnWithdraw);
 
 
 		btnDeposit = new JButton("Deposit");
 		btnDeposit.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent arg0) {
-				DepositAndWithdraw withdraw = new DepositAndWithdraw(currentAccount, true);
-				withdraw.setVisible(true);
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				btnDeposit_mouseClicked(e);
 			}
 		});
-		btnDeposit.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		btnDeposit.setBounds(152, 198, 118, 46);
+		btnDeposit.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		btnDeposit.setBounds(190, 198, 118, 46);
 		contentPane.add(btnDeposit);
 
 
 		btnTransactions = new JButton("Transactions");
 		btnTransactions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TransactionDialog.main(null);
+				TransactionDialog transaction = new TransactionDialog(currentAccount);
+				transaction.setVisible(true);
 			}
 		});
-		btnTransactions.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		btnTransactions.setBounds(294, 198, 118, 46);
+		btnTransactions.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		btnTransactions.setBounds(356, 198, 138, 46);
 		contentPane.add(btnTransactions);
 
 
 		comboBoxSelectAccount = new JComboBox<String>();
-		comboBoxSelectAccount.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		comboBoxSelectAccount.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 		comboBoxSelectAccount.setMaximumRowCount(3);
 		comboBoxSelectAccount.addItem("Please select an Account");
 		comboBoxSelectAccount.addItem("Chequing");
 		comboBoxSelectAccount.addItem("Savings");
-		comboBoxSelectAccount.setBounds(95, 22, 198, 34);
+		comboBoxSelectAccount.setBounds(180, 22, 208, 34);
 		contentPane.add(comboBoxSelectAccount);
 		comboBoxSelectAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setControls();
 			}
 		});
+		setControls();
 
 	}
 
@@ -146,7 +147,6 @@ public class BankAccountGUI extends JFrame {
 				btnWithdraw.setEnabled(false);
 				btnDeposit.setEnabled(false);
 				btnTransactions.setEnabled(false);
-				System.out.print("Epic");
 			}
 		} catch(NullPointerException e) {
 			textFieldBalance.setEnabled(false);
@@ -157,16 +157,31 @@ public class BankAccountGUI extends JFrame {
 		}
 	}
 
-	protected static void btnDepositAndWithdraw_mouseClicked(MouseEvent arg0) {
-		if (!transactionType) {
-			double amount = Double.valueOf(DepositAndWithdraw.textFieldAmount.getText());
-			String description = DepositAndWithdraw.textFieldDescription.getText();
+	protected void btnWithdraw_mouseClicked(MouseEvent arg0) {
+		DepositAndWithdraw withdrawDialog = new DepositAndWithdraw(currentAccount, false);
+		withdrawDialog.setModal(true);
+		withdrawDialog.setVisible(true);
+		boolean ok = withdrawDialog.isOk();
+		withdrawDialog.setLocationRelativeTo(this);
+		if(ok) {
+			double amount = withdrawDialog.getAmount();
+			String description = withdrawDialog.getDescription();
 			currentAccount.withdraw(amount, description);
-		}
-		else {
-			double amount = Double.valueOf(DepositAndWithdraw.textFieldAmount.getText());
-			String description = DepositAndWithdraw.textFieldDescription.getText();
+			setControls();
+		}	
+	}
+
+	protected void btnDeposit_mouseClicked(MouseEvent e) {
+		DepositAndWithdraw depositDialog = new DepositAndWithdraw(currentAccount, true);
+		depositDialog.setModal(true);
+		depositDialog.setVisible(true);
+		depositDialog.setLocationRelativeTo(this);
+		boolean ok = depositDialog.isOk();
+		if(ok) {
+			double amount = depositDialog.getAmount();
+			String description = depositDialog.getDescription();
 			currentAccount.deposit(amount, description);
-		}
+			setControls();
+		}			
 	}
 }
